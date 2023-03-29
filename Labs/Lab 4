@@ -1,0 +1,72 @@
+########################################################
+# This procedure takes a binary byte and prints a hexadecimal character.
+#
+# The call to syscall has the following parameters:
+#   $a0: thing to be printed
+#   $v0: Mode
+#       1=integer
+#       4=null-terminated string
+########################################################
+	.data
+header: .asciiz  "Print byte: 0x"		
+table:  .asciiz  "0123456789ABCDEF"		
+char:	.byte	 0,0
+number: .byte  	 0x6a			
+	.text
+	.globl main
+main:						
+	li 	$v0,4			# printString("Print byte: 0x"
+	la	$a0,header
+	syscall
+#					
+	#addi	$sp,$sp,-8		#Allocate 8 bits to stack (2 spaces)
+	
+	lb	$s2,number		#$s2 = number		
+	srl	$s4,$s2,4	   	#Shift $s2 right 4 bits and store into $s4
+	andi	$s4,$s4,0xf		#And immediate $s4 and 0xf and store into $s4
+	sw	$s4,-4($sp)		#-4($sp) = $s2	#Store $s4(left nibble) into stack
+
+	jal	PrtNbl
+	
+	andi	$s4,$s2,0xf		#And immediate $s4 and 0xf and store into $s4
+	sw	$s4,-4($sp)		#-4($sp) = $s2	#Store $s4(right nibble) into stack
+	
+	jal	PrtNbl
+	
+	#addi	$sp,$sp,8		#Deallocate 8 bits from stack
+	
+	li	$v0,10			# exit
+	syscall
+	
+#						
+#	li	$v0,4			# printString(char)
+#	la	$a0,char
+#	syscall
+#	
+#    Calling sequence
+#      lw $a0,
+#      jal PrtNbl
+#				
+#   Stack allocation
+#     4(sp) = nibble
+#     0(sp) = return address
+PrtNbl:
+	addi	$sp,$sp,-8
+	sw	$ra,0($sp)		#Save return address into 0($sp)
+	lb	$t1,4($sp)
+	la	$t5,table		# entry = table[index]
+	add	$t5,$t5,$t1
+	lb	$t3,0($t5)
+	sb	$t3,char		# char = entry
+#						
+	li	$v0,4			# printString(char)
+	la	$a0,char
+	
+	syscall
+	
+	lw	$ra,0($sp)
+	addi	$sp,$sp,8
+	jr	$ra
+	
+#					 
+

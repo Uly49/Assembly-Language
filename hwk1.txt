@@ -1,0 +1,31 @@
+###################################################################
+#  HWK1
+#  THis program executes an AND and OR calculation
+#  and displays the result.
+#  Author: Ulysses Palomar
+###################################################################
+	.data
+arr1:	.word	0x0eeeeeee
+answer: .ascii	"0x3f & 0xaa | 0x03  = 0x"
+	
+	.globl 	main
+		.text
+main:
+
+################# Assignment 1A ######################################
+	li	$v0,4		#set $vo to print string and print answer
+	la	$a0,answer	
+	syscall
+
+	li	$t1,63
+	li	$t2,170
+	and	$t2,$t1,$t2	#Execute AND operation with decimal 63 and 170
+	li	$t4,3
+	or 	$t2,$t2,$t4	#execute OR operation with answer from AND and decimal 3
+	
+	li	$v0,34		#set $vo to print integer in hexadecimal and print final answer
+	move	$a0,$t2
+	syscall
+	
+	li	$v0,10		#terminate execution
+	syscall

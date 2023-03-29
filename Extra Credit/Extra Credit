@@ -1,0 +1,130 @@
+###########################################################
+#Extra Credit
+#This program will read in a percentage grade and
+#print its corresponding letter grade
+#Author: Ulysses Palomar
+###########################################################
+	.data
+header:	.asciiz	"Please enter a percentage grade: "
+answer:	.asciiz	"That grade corresponds to letter grade: "
+gradea:	.asciiz	"A"
+gradeb:	.asciiz	"B"
+gradec:	.asciiz	"C"
+graded:	.asciiz	"D"
+gradef:	.asciiz	"F"
+toobig:	.asciiz	"Error. The number you entered is above 100."
+toosma:	.asciiz	"Error. The number you entered is below 0."
+nwline:	.asciiz	"\n"
+
+	.globl	main
+		.text
+main:
+	
+	li	$v0,4		#$v0 = 4	#Set $v0 to 4 to print string
+	la	$a0,header	#$a0 = header	#Set $a0 to header to be printed
+	syscall			#Execute
+
+	li	$v0,5		#$v0 = 5	#Set $v0 to read input
+	syscall
+	
+	move	$t0,$v0		#$t0 = $v0	#Save input into $t0
+	
+	bgt	$t0,100,error1
+	bgt	$t0,89,printA	#If $t0 > 89, jump to printA
+	bgt	$t0,79,printB	#If $t0 > 79, jump to printB
+	bgt	$t0,69,printC	#If $t0 > 69, jump to printC
+	bgt	$t0,59,printD	#If $t0 > 59, jump to printD
+	blt	$t0,0,error2	#If $t0 < 0, jump to error2
+	blt	$t0,60,printF	#If $t0 < 60, jump to printF
+	
+	li	$v0,10		#Terminate
+	syscall
+	
+error1:
+
+	li	$v0,4		#$v0 = 4	#Set v0 to print string
+	la	$a0,toobig	#$a0 = toobig	#Set a0 to print toobig
+	syscall			#Execute
+	
+	li	$v0,4		#$v0 = 4	#Set v0 to print string
+	la	$a0,nwline	#$a0 = nwline	#Set a0 to print nwline
+	syscall			#Execute
+	
+	b	main		#Jump back to main
+	
+error2:
+
+	li	$v0,4		#$v0 = 4	#Set v0 to print string
+	la	$a0,toosma	#$a0 = toosma	#Set a0 to print toosma
+	syscall			#Execute
+	
+	li	$v0,4		#$v0 = 4	#Set v0 to print string
+	la	$a0,nwline	#$a0 = nwline	#Set a0 to print nwline
+	syscall			#Execute
+	
+	b	main		#Jump back to main
+	
+printA:
+
+	li	$v0,4		#$v0 = 4	#Set v0 to print string
+	la	$a0,answer	#$a0 = answer	#Set a0 to print answer
+	syscall			#Execute
+	
+	li	$v0,4		#$v0 = 4	#Set v0 to print string
+	la	$a0,gradea	#$a0 = gradea	#Set a0 to print gradea
+	syscall			#Execute
+	
+	li	$v0,10		#$v0 = 10	#Set v0 to terminate
+	syscall			#Execute
+	
+printB:
+
+	li	$v0,4		#$v0 = 4	#Set v0 to print string
+	la	$a0,answer	#$a0 = answer	#Set a0 to print answer
+	syscall			#Execute
+	
+	li	$v0,4		#$v0 = 4	#Set v0 to print string
+	la	$a0,gradeb	#$a0 = gradeb	#Set a0 to print gradeb
+	syscall			#Execute
+	
+	li	$v0,10		#$v0 = 10	#Set v0 to terminate
+	syscall			#Execute
+	
+printC:
+
+	li	$v0,4		#$v0 = 4	#Set v0 to print string
+	la	$a0,answer	#$a0 = answer	#Set a0 to print answer
+	syscall			#Execute
+	
+	li	$v0,4		#$v0 = 4	#Set v0 to print string
+	la	$a0,gradec	#$a0 = gradec	#Set a0 to print gradec
+	syscall			#Execute
+	
+	li	$v0,10		#$v0 = 10	#Set v0 to terminate
+	syscall			#Execute
+	
+printD:
+
+	li	$v0,4		#$v0 = 4	#Set v0 to print string
+	la	$a0,answer	#$a0 = answer	#Set a0 to print answer
+	syscall			#Execute
+	
+	li	$v0,4		#$v0 = 4	#Set v0 to print string
+	la	$a0,graded	#$a0 = graded	#Set a0 to print graded
+	syscall			#Execute
+	
+	li	$v0,10		#$v0 = 10	#Set v0 to terminate
+	syscall			#Execute
+	
+printF:
+
+	li	$v0,4		#$v0 = 4	#Set v0 to print string
+	la	$a0,answer	#$a0 = answer	#Set a0 to print answer
+	syscall			#Execute
+	
+	li	$v0,4		#$v0 = 4	#Set v0 to print string
+	la	$a0,gradef	#$a0 = gradef	#Set a0 to print gradef
+	syscall			#Execute
+	
+	li	$v0,10		#$v0 = 1-0	#Set v0 to terminate
+	syscall			#Execute

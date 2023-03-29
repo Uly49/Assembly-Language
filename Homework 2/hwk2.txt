@@ -1,0 +1,31 @@
+###################################################################
+#  HWK2
+#  This program emoves a sprite across one word
+#  Author: Ulysses Palomar
+###################################################################
+	.data
+arr1:	.word	0x0eeeeeee
+
+	.globl 	main
+		.text
+main:
+
+################# Assignment 1B ######################################
+	li	$s3,0x0eeeeeee		#load word to $s3
+	li	$t5,7			#set i = 7
+	
+loop:
+	ror	$s3,$s3,4		#loop to shift sprite right until i = 0
+	sw	$s3,arr1
+	addi	$t5,$t5,-1
+	bnez	$t5,loop
+	
+	
+loop2:
+	rol	$s3,$s3,4		#loop to shift sprite left until i = 7
+	sw	$s3,arr1
+	addi	$t5,$t5,1
+	bne	$t5,7,loop2
+	
+	li	$v0,10
+	syscall

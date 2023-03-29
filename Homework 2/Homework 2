@@ -1,0 +1,220 @@
+###################################################################
+#Program 2
+#This program will translate machine code and print the output
+#Author: Ulysses Palomar
+###################################################################
+	.data
+hexcod1:.word	0x003100b3
+hexcod2:.word	0x3e813083
+hexcod3:.word	0x3e113423
+#0x003100b3 = 00000|00011|00010|000|00001|0110011
+#0x3e813083 = 11111|01000|00010|011|00001|0000011
+#0x3e113423 = 11111 00001|00010|011|01000|0100011
+header1:.asciiz	"The following machine code will be translated: 0x003100b3\n"
+header2:.asciiz	"The following machine code will be translated: 0x3e813083\n"
+header3:.asciiz	"The following machine code will be translated: 0x3e113423\n"
+rformat:.asciiz	"R-format "
+iformat:.asciiz	"I-format "
+sformat:.asciiz	"S-format "
+nwline:	.asciiz	"\n"
+
+	.globl	main
+		.text
+main:
+
+	li	$v0,4		#$v0 = 4		#Set v0 to print string
+	la	$a0,header1	#$a0 = header1		#Set a0 to print header
+	syscall			#Execute
+		
+	lw	$s1,hexcod1	#$t1 = hexcod1		#Load hexcode address to t1
+	
+	jal	identify
+	
+identify:
+
+	andi	$t2,$s1,0x33	#$t2 = $t1 ANDI 0x33	#Isolate opcode (last 7 bits) and store in $t2	
+	beq	$t2,0x33,Rinst	#If $t2 = 0x33, branch to Rinst
+	
+	andi	$t3,$s1,0x13	#$t3 = $t1 ANDi 0x13	#Isolate opcode (last 7 bits) and store in $t3	
+	beq	$t3,0x13,Iinst	#If $t3 = 0x13, branch to Iinst
+		
+	andi	$t5,$s1,0x23	#$t5 = $t1 ANDI 0x23	#Isolate opcode (last 7 bits) and store in $t5
+	beq	$t5,0x23,Sinst	#If $t5 = 0x23, branch to Sinst
+	
+	andi	$t4,$s1,0x03	#$t3 = $t1 ANDi 0x13	#Isolate opcode (last 7 bits) and store in $t3	
+	beq	$t4,0x03,Iinst	#If $t3 = 0x13, branch to Iinst
+	                 	
+#	b	main		#Branch back to main
+
+Rinst:
+	
+	li	$v0,4		#$v0 = 4	#Set $v0 to print string
+	la	$a0,rformat	#$a0 = rformat	#Set $a0 to print rformat
+	syscall			#Execute
+	
+	srl	$t1,$s1,7	#Get rid of opcode by shifting right 7 bits (opcode size)
+	andi	$t1,$t1,0x1f	#$t1 = $t1 ANDI 0x31	#Isolate RD by removing bits to the left of RD
+
+	li	$v0,11		#$v0 = 11	#Set $v0 to print character
+	li	$a0,'x'		#$a0 = 'x'	#Set $a0 to print 'x'
+	syscall			#Execute
+
+	li	$v0,36		#$v0 = 36	#Set $vo to print number in decimal
+	move	$a0,$t1		#$a0 = $t1	#Move contents of $t1 into $v0
+	syscall			#Execute
+
+	li	$v0,11		#$v0 = 11	#Set $vo to print character
+	li	$a0,','		#$a0 = ','	#Set $a0 to print ','
+	syscall			#Execute
+
+	srl	$t2,$s1,15	#Get rid of RD and func3 by shifting right 15 bits (Opcode, RD, and Func3 size)
+	andi	$t2,$t2,0x1f	#$t2 = $t2 ANDI 0x1f	#Isolate RS by removing bits to the left of RS
+
+	li	$v0,11		#$v0 = 11	#Set $v0 to print character
+	li	$a0,'x'		#$a0 = 'x'	#Set $a0 to print 'x'
+	syscall			#Execute
+	
+	li	$v0,36		#$v0 = 36	#Set $vo to print number in decimal
+	move	$a0,$t2		#$a0 = $t2	#Move contents of $t2 into $v0
+	syscall			#Execute
+	
+	li	$v0,11		#$v0 = 11	#Set $vo to print character
+	li	$a0,','		#$a0 = ','	#Set $a0 to print ','
+	syscall			#Execute
+	
+	srl	$t3,$s1,20	#Get rid of Opcode, RD, Func3, and RS1 by shifting right 9 bits (Opcode, RD, Func3, 
+				#and RS1 size)
+	andi	$t3,$t3,0x1f	#$t3 = $t3 ANDI 0x1f	#Isolate RS by removing bits to the left of RS
+	
+	li	$v0,11		#$v0 = 11	#Set $v0 to print character
+	li	$a0,'x'		#$a0 = 'x'	#Set $a0 to print 'x'
+	syscall			#Execute
+	
+	li	$v0,36		#$v0 = 36	#Set $vo to print number in decimal
+	move	$a0,$t3		#$a0 = $t3	#Move contents of $t3 into $v0
+	syscall			#Execute
+	
+	li	$v0,4		#$v0 = 34	#Set $vo to print string
+	la	$a0,nwline	#$a0 = nwline	#Set $a0 to print nwline
+	syscall			#Execute
+	
+	li	$v0,4		#$v0 = 4		#Set v0 to print string
+	la	$a0,header2	#$a0 = header2		#Set a0 to print header
+	syscall			#Execute
+		
+	lw	$s1,hexcod2	#$t1 = hexcod2		#Load hexcode address to t1
+	
+	j	identify	#Jump to identify
+
+Iinst:
+
+	li	$v0,4		#$v0 = 4	#Set $v0 to print string
+	la	$a0,iformat	#$a0 = iformat	#Set $a0 to print iformat
+	syscall			#Execute
+	
+	li	$v0,11		#$v0 = 11	#Set $v0 to print character
+	li	$a0,'x'		#$a0 = 'x'	#Set $a0 to print 'x'
+	syscall			#Execute
+	
+	srl	$t1,$s1,7	#Get rid of opcode by shifting right 7 bits (opcode size)
+	andi	$t1,$t1,0x1f	#$t1 = $t1 ANDI 0x1f	#Isolate RD by removing bits to the left of RD
+	
+	li	$v0,36		#$v0 = 36	#Set $vo to print number in decimal
+	move	$a0,$t1		#$a0 = $t1	#Move contents of $t1 into $v0
+	syscall			#Execute
+	
+	li	$v0,11		#$v0 = 11	#Set $vo to print character
+	li	$a0,','		#$a0 = ','	#Set $a0 to print ','
+	syscall			#Execute
+
+	li	$v0,11		#$v0 = 11	#Set $v0 to print character
+	li	$a0,'x'		#$a0 = 'x'	#Set $a0 to print 'x'
+	syscall			#Execute
+	
+	srl	$t2,$s1,15	#Get rid of RD and func3 by shifting right 15 bits (Opcode, RD, and Func3 size)
+	andi	$t2,$t2,0x1f	#$t2 = $t2 ANDI 0x1f	#Isolate RS by removing bits to the left of RS
+	
+	li	$v0,36		#$v0 = 36	#Set $vo to print number in decimal
+	move	$a0,$t2		#$a0 = $t2	#Move contents of $t2 into $v0
+	syscall			#Execute
+	
+	li	$v0,11		#$v0 = 11	#Set $vo to print character
+	li	$a0,','		#$a0 = ','	#Set $a0 to print ','
+	syscall			#Execute
+	
+	srl	$t3,$s1,20	#Get rid of Opcode, RD, Func3, and RS1 by shifting right 20 bits (Opcode, RD, Func3, 
+				#and RS1 size)
+	
+	li	$v0,36		#$v0 = 36	#Set $vo to print number in decimal
+	move	$a0,$t3		#$a0 = $t3	#Move contents of $t3 into $v0
+	syscall			#Execute
+	
+	li	$v0,4		#$v0 = 4	#Set $vo to print string
+	la	$a0,nwline	#$a0 = nwline	#Set $a0 to print nwline
+	syscall			#Execute
+	
+	li	$v0,4		#$v0 = 4		#Set v0 to print string
+	la	$a0,header3	#$a0 = header3		#Set a0 to print header
+	syscall			#Execute
+		
+	lw	$s1,hexcod3	#$t1 = hexcod3		#Load hexcode address to t1
+	
+	j	identify	#Jump to identify
+	
+Sinst:
+
+	li	$v0,4		#$v0 = 4	#Set $v0 to print string
+	la	$a0,sformat	#$a0 = sformat	#Set $a0 to print sformat
+	syscall			#Execute
+
+	li	$v0,11		#$v0 = 11	#Set $v0 to print character
+	li	$a0,'x'		#$a0 = 'x'	#Set $a0 to print 'x'
+	syscall			#Execute
+	
+	srl	$t1,$s1,20	#Get rid of RS1, Func3, Immediate, and Opcode by shifting right 20 bits (RS1, Func3, 
+				#Immediate, and Opcode size)
+	andi	$t1,$t1,0x1f	#$t1 = $t1 ANDI 0x1f	#Isolate RS2 by removing bits to the left of RS2
+	
+	li	$v0,36		#$v0 = 36	#Set $vo to print number in decimal
+	move	$a0,$t1		#$a0 = $t1	#Move contents of $t1 into $v0
+	syscall			#Execute
+	
+	li	$v0,11		#$v0 = 11	#Set $vo to print character
+	li	$a0,','		#$a0 = ','	#Set $a0 to print ','
+	syscall			#Execute
+	
+	li	$v0,11		#$v0 = 11	#Set $v0 to print character
+	li	$a0,'x'		#$a0 = 'x'	#Set $a0 to print 'x'
+	syscall			#Execute
+	
+	srl	$t2,$s1,15	#Get rid of Func3, Immediate, and Opcode by shifting right 15 bits (Func3, Immediate, 
+				#and Opcode size)
+	andi	$t2,$t2,0x1f	#$t2 = $t2 ANDI 0x1f	#Isolate RS1 by removing bits to the left of RS1
+
+	li	$v0,36		#$v0 = 36	#Set $vo to print number in decimal
+	move	$a0,$t2		#$a0 = $t2	#Move contents of $t2 into $v0
+	syscall			#Execute
+	
+	li	$v0,11		#$v0 = 11	#Set $vo to print character
+	li	$a0,','		#$a0 = ','	#Set $a0 to print ','
+	syscall			#Execute
+	
+	srl	$t3,$s1,7	#Get rid of Opcode by shifting right 7 bits (Opcode size)
+	andi	$t3,$t3,0x1f	#$t3 = $t3 ANDI 0x1f	#Isolate right Immediate by removing bits to the left
+	
+	srl	$t4,$s1,20	#Get rid of RS1, Func3, right Immediate, and Opcode by shifting right 20 bits (size 
+				#of all of them)
+	andi	$t4,$t4,0x3e0	#$t4 = $t4 ANDI 0x3e0	#Isolate left Immediate leaving space to add right Immediate 
+							#by removing bits to the right of RS2
+	add	$t5,$t3,$t4	#$t5 = $t3 + $t5	#Add right Immediate with left Immediate
+	
+	li	$v0,36		#$v0 = 36	#Set $vo to print number in decimal
+	move	$a0,$t5		#$a0 = $t5	#Move contents of $t5 into $v0
+	syscall			#Execute
+	
+	li	$v0,4		#$v0 = 34	#Set $vo to print string
+	la	$a0,nwline	#$a0 = nwline	#Set $a0 to print nwline
+	syscall			#Execute
+
+	li	$v0,10		#$v0 = 10	#Set $v0 to terminate
+	syscall			#Execute

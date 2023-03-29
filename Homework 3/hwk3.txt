@@ -1,0 +1,55 @@
+###################################################################
+#  HWK3
+#  This program emoves a sprite across two words
+#  Author: Ulysses Palomar
+###################################################################
+	.data
+arr1:	.word	0x0eeeeeee,0xeeeeeeee
+arr2:	.word	0xeeeeeeee,0x0eeeeeee
+
+	.globl 	main
+		.text
+main:
+
+################# Assignment 1B ######################################
+	lw	$s1,arr1		#load word to $s1
+	li	$t1,7			#set i = 7
+	li	$s5,0
+	
+loop:
+	ror	$s1,$s1,4		#loop to shift sprite right across first word
+	sw	$s1,arr1
+	addi	$t1,$t1,-1
+	bnez	$t1,loop
+	
+	li	$t2,8
+	li	$s2, 0xeeeeeeee
+	sw	$s2,arr1($s5)
+	
+loop2:
+	ror	$s1,$s1,4		#loop to shift sprite right across second word
+	sw	$s1,arr1+4
+	addi	$t2,$t2,-1
+	bnez	$t2,loop2
+	
+	li	$t3,7
+	
+loop3:
+	rol	$s1,$s1,4		#loop to shift sprite left across second word
+	sw	$s1,arr1+4
+	addi	$t3,$t3,-1
+	bnez	$t3,loop3
+	
+	li	$t4,8
+	li	$s2,0xeeeeeee
+	li	$s5,4
+	sw	$s2,arr1-4($s5)
+	
+loop4:
+	rol	$s1,$s1,4		#loop to shift sprite left across first word
+	sw	$s1,arr1
+	addi	$t4,$t4,-1
+	bnez	$t4,loop4
+	
+	li	$v0,10
+	syscall

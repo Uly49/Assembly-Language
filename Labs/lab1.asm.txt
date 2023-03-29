@@ -1,0 +1,27 @@
+###################################################################
+#  This program converts from little endian to big endian (or vice versa)
+#  in two different ways: direct addressing and pointers (addresses).
+#  Author: <Your name>
+###################################################################
+	.data
+in1buf:	.byte   1,2,3,4,5,6,7,8
+out1bf:	.byte	0,0,0,0,0,0,0,0
+in2buf:	.byte   9,10,11,12,13,14,15,16
+out2bf:	.byte	0,0,0,0,0,0,0,0
+	
+	.globl 	main
+	.text
+main:
+################# Exercise 1 ######################################
+	lb	$t1,in1buf	   # out1buf[3] = in1buf[0]
+	sb	$t1,out1bf+3
+	
+################# Exercise 2 ######################################
+	la	$s0,in2buf         # in2ptr = &in2buf    # (address(in2buf))
+	la	$s1,out2bf         # out2ptr = &out2buf  # (address(out2buf))
+
+	lb	$t1,0($s0)         # value(out2ptr+3) = value(in2ptr+0)
+	sb	$t1,3($s1)
+
+	li      $v0,10		   # exit
+	syscall

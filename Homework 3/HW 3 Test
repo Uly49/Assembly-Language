@@ -1,0 +1,31 @@
+###################################################################
+#Program 2
+#This program will translate machine code and print the output
+#Author: Ulysses Palomar
+###################################################################
+	.data
+hexcode:.word	0x003100b3,0x3e813083,0x3e113423,0
+parsed:	.space	32
+parsedz:.word	8
+nwline:	.asciiz	"\n"
+
+	.globl	main
+		.text
+main:
+
+	la	$t1,hexcode
+
+loop:
+	lw	$s1,0($t1)
+	beq	$s1,$zero,exit
+	addi	$t1,$t1,4
+	
+	li	$v0,34
+	la	$a0,($s1)
+	syscall
+	j	loop
+
+
+exit:	
+	li	$v0,10
+	syscall
