@@ -1,3 +1,3 @@
-# Assembly-Language
-University of Wisconsin - Parkside
+# Assembly Language  
+University of Wisconsin - Parkside  
 CSCI 245
